@@ -1,0 +1,28 @@
+fastapi==0.115.11
+fastapi-cli==0.0.7
+uvicorn==0.34.0
+
+#for database (later version of alchemy currently not compatible)
+SQLAlchemy==2.0.38
+#psycopg2-binary==2.9.5 # Post gres only requirement
+
+#for loading environment variables
+python-dotenv==1.0.1
+
+#for email validation
+pydantic[email]
+
+#for accessing form data
+python-multipart==0.8
+
+#Databases gives asyncio support for a range of databases.
+databases==0.9.0
+databases[sqlite]
+
+pandas==2.2.3
+aio-pika==9.5.5
+
+# libraries for text extraction from files.
+PyPDF2==3.0.1
+python-docx==1.1.2
+textract==1.6.5

@@ -1,11 +1,64 @@
 "use client";
 
-import { useState } from "react";
-import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
+import { useRef } from "react";
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogPanel,
+  DialogTitle,
+} from "@headlessui/react";
 import { FaPlus } from "react-icons/fa";
+import axios from "axios";
+import config from "@/utilities/config";
 
-export default function add_records() {
-  const [open, setOpen] = useState(false);
+interface AddRecordsProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}
+
+export default function add_records({ open, setOpen }: AddRecordsProps) {
+  const inputFile = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async () => {
+    const file = inputFile.current?.files?.[0];
+    if (!file) return;
+
+    const allowedExtensions = [".docx", ".doc", ".txt", ".pdf"];
+    const fileExtension = file.name.split(".").pop()?.toLowerCase();
+
+    if (!fileExtension || !allowedExtensions.includes(`.${fileExtension}`)) {
+      alert(
+        "Unsupported file type. Please upload a .docx, .doc, .txt, or .pdf file."
+      );
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await axios.post(
+        `${config.api_url}/add_record`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        alert("Record added successfully");
+      } else {
+        alert("Error adding record");
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      alert("Error uploading file");
+    } finally {
+      setOpen(false);
+    }
+  };
 
   return (
     <>
@@ -46,6 +99,7 @@ export default function add_records() {
                         are .docx, .doc, .txt, .pdf.
                       </p>
                       <input
+                        ref={inputFile}
                         type="file"
                         className="mt-2 block w-full text-sm text-gray-900 border border-gray-300 rounded cursor-pointer bg-gray-50 focus:outline-none"
                       />
@@ -56,7 +110,7 @@ export default function add_records() {
               <div className="bg-color-2 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                 <button
                   type="button"
-                  onClick={() => setOpen(false)}
+                  onClick={handleFileUpload}
                   className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-500 sm:ml-3 sm:w-auto"
                 >
                   Add

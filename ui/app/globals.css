@@ -238,6 +238,10 @@ body {
   overflow: hidden;
 }
 
+.main_screen {
+  display: grid;
+  grid-template-columns: 200px auto;
+}
 
 
 @media (max-width: 768px) {
@@ -261,5 +265,9 @@ body {
     -webkit-line-clamp: 5;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  .main_screen {
+    grid-template-columns: auto;
   }
 }

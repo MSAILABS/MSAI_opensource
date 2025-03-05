@@ -46,3 +46,22 @@ def delete_record_from_db(record_id: int, db: Session):
         log.error("Error on deleting record from database")
         log.error(e)
         return False
+
+
+def update_record_in_db(record_id: int, title: str, description: str, db: Session) -> bool:
+    try:
+        record = db.query(Records).filter(Records.id == record_id).first()
+        if record:
+            record.title = title
+            record.description = description
+            db.commit()
+            return True
+        else:
+            log.error("Record not found")
+            return False
+    except Exception as e:
+        db.rollback()
+        log.error("Error on updating record in database")
+        log.error(e)
+        return False
+

@@ -1,11 +1,13 @@
 import os
 import logging as log
+from turtle import title
 from fastapi import HTTPException, UploadFile
 from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from db.repository.records import add_record_into_db, delete_record_from_db, get_all_records_from_db
+from db.repository.records import add_record_into_db, delete_record_from_db, get_all_records_from_db, update_record_in_db
 from db.session import get_db
 
 from utilities.files import delete_file, save_upload_file
@@ -54,7 +56,7 @@ async def add_record(file: UploadFile, db: Session = Depends(get_db)):
     finally:
         delete_file(file_path)
     
-@router.post("/delete_record/{record_id}")
+@router.get("/delete_record/{record_id}")
 async def delete_record(request: Request, record_id: int, db: Session = Depends(get_db)):
     try:
         # Assuming you have a function save_to_db to save data to the database
@@ -68,4 +70,23 @@ async def delete_record(request: Request, record_id: int, db: Session = Depends(
         log.error("error on delete_record route")
         log.error(e)
         raise e
-    
+
+
+class Edit_Record(BaseModel):
+    title: str
+    description: str
+
+@router.post("/edit_record/{record_id}")
+async def edit_record(request: Request, record_id: int, data: Edit_Record, db: Session = Depends(get_db)):
+    try:
+        is_record_updated = update_record_in_db(record_id=record_id, title=data.title, description=data.description, db=db)
+
+        if is_record_updated:
+            return JSONResponse(content={"message": "Record updated"}, status_code=status.HTTP_200_OK)
+        else:
+            return JSONResponse(content={"message": "Record could not updated"}, status_code=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        log.error("Error on editing the record")
+        log.error(e)
+        raise e

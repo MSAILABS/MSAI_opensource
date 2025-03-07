@@ -243,6 +243,21 @@ body {
   grid-template-columns: 200px auto;
 }
 
+.loading-icon {
+  display: inline-block;
+  animation: rotate 0.5s linear infinite;
+  margin-right: 5px;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 
 @media (max-width: 768px) {
   .chatArea {

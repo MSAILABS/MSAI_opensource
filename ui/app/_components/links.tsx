@@ -30,14 +30,14 @@ export default function links() {
       </div>
       <div>
         <p
-          className="text-lg md:p-1 text-white my-4 text-center md:mt-5 hover:text-gray-800 hover:bg-white flex items-center justify-center hidden md:flex mobile-menu-item"
+          className="text-lg md:p-1 text-white m-4 md:mt-5 hover:text-gray-800 hover:bg-white flex items-center pl-1 hidden md:flex mobile-menu-item"
           onClick={() => Redirect("/records")}
         >
           <FaFolder className="mr-2" />
           Records
         </p>
         <p
-          className="text-lg md:p-1 my-4 text-white text-center hover:text-gray-800 hover:bg-white flex items-center justify-center hidden md:flex mobile-menu-item"
+          className="text-lg md:p-1 m-4 text-white hover:text-gray-800 hover:bg-white flex items-center pl-1 hidden md:flex mobile-menu-item"
           onClick={() => Redirect("/chatbot")}
         >
           <FaComments className="mr-2" />

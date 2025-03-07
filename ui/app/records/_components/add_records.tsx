@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   Dialog,
   DialogBackdrop,
@@ -10,6 +10,7 @@ import {
 import { FaPlus } from "react-icons/fa";
 import axios from "axios";
 import config from "@/utilities/config";
+import Loading from "@/app/_components/loading";
 
 interface AddRecordsProps {
   open: boolean;
@@ -18,6 +19,7 @@ interface AddRecordsProps {
 
 export default function add_records({ open, setOpen }: AddRecordsProps) {
   const inputFile = useRef<HTMLInputElement>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleFileUpload = async () => {
     const file = inputFile.current?.files?.[0];
@@ -37,6 +39,7 @@ export default function add_records({ open, setOpen }: AddRecordsProps) {
     formData.append("file", file);
 
     try {
+      setLoading(true);
       const response = await axios.post(
         `${config.api_url}/add_record`,
         formData,
@@ -57,6 +60,7 @@ export default function add_records({ open, setOpen }: AddRecordsProps) {
       alert("Error uploading file");
     } finally {
       setOpen(false);
+      setLoading(false);
     }
   };
 
@@ -124,6 +128,11 @@ export default function add_records({ open, setOpen }: AddRecordsProps) {
                   Cancel
                 </button>
               </div>
+              {loading && (
+                <div className="mt-2">
+                  <Loading message={"Adding Record..."} />
+                </div>
+              )}
             </DialogPanel>
           </div>
         </div>

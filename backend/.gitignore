@@ -2,3 +2,4 @@ venv
 logs
 
 /temp_store
+*.pth

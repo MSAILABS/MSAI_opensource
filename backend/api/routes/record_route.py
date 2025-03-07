@@ -1,17 +1,21 @@
+from datetime import datetime
 import os
 import logging as log
-from turtle import title
 from fastapi import HTTPException, UploadFile
 from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
+from httpx import Response
 from sqlalchemy.orm import Session
 
+from api.agents_api.records_api import add_record_into_vector_db, remove_record_from_vector_db, update_record_in_vector_db
+from api.agents_api.schemas.records_schema import Edit_Record, RecordData, RecordDataDelete
 from db.repository.records import add_record_into_db, delete_record_from_db, get_all_records_from_db, update_record_in_db
 from db.session import get_db
 
 from utilities.files import delete_file, save_upload_file
 from utilities.text_extract import extract_text
+
+from core.configurations import user_identifier
 
 router = APIRouter()
         
@@ -46,7 +50,20 @@ async def add_record(file: UploadFile, db: Session = Depends(get_db)):
         record = add_record_into_db(title, data, db)
 
         if record is not None:
-            return JSONResponse(content={"message": "Record added successfully"}, status_code=status.HTTP_201_CREATED)
+            record_data = RecordData(
+                record_id=record.id, 
+                record_description=record.description, 
+                record_title=record.title, 
+                record_upload_date=str(record.upload_date),
+                identifier=user_identifier
+            )
+
+            res: Response = await add_record_into_vector_db(record_data)
+
+            if res.status_code == 201:
+                return JSONResponse(content={"message": "Record added successfully"}, status_code=status.HTTP_201_CREATED)
+            else:
+                return JSONResponse(content={"message": "Record added successfully on backend, but not on agents db"}, status_code=status.HTTP_201_CREATED)
         
         return JSONResponse(content={"error": "Error on adding record"}, status_code=status.HTTP_400_BAD_REQUEST) 
     except Exception as e:
@@ -63,7 +80,17 @@ async def delete_record(request: Request, record_id: int, db: Session = Depends(
         is_record_deleted = delete_record_from_db(record_id, db)
 
         if is_record_deleted:
-            return JSONResponse(content={"message": "Record deleted successfully"}, status_code=status.HTTP_200_OK)
+            record_data_delete = RecordDataDelete(
+                record_id=record_id,
+                identifier=user_identifier
+            )
+            
+            res: Response = await remove_record_from_vector_db(record_data_delete)
+
+            if res.status_code == 200:
+                return JSONResponse(content={"message": "Record deleted successfully"}, status_code=status.HTTP_200_OK)
+            else:
+                return JSONResponse(content={"message": "Record deleted successfully, but not on agents db"}, status_code=status.HTTP_200_OK)
         
         return JSONResponse(content={"error": "Error on deleting record"}, status_code=status.HTTP_400_BAD_REQUEST) 
     except Exception as e:
@@ -72,9 +99,7 @@ async def delete_record(request: Request, record_id: int, db: Session = Depends(
         raise e
 
 
-class Edit_Record(BaseModel):
-    title: str
-    description: str
+
 
 @router.post("/edit_record/{record_id}")
 async def edit_record(request: Request, record_id: int, data: Edit_Record, db: Session = Depends(get_db)):
@@ -82,7 +107,21 @@ async def edit_record(request: Request, record_id: int, data: Edit_Record, db: S
         is_record_updated = update_record_in_db(record_id=record_id, title=data.title, description=data.description, db=db)
 
         if is_record_updated:
-            return JSONResponse(content={"message": "Record updated"}, status_code=status.HTTP_200_OK)
+            record_data = RecordData(
+                record_id=record_id, 
+                record_description=data.description, 
+                record_title=data.title, 
+                record_upload_date=str(datetime.now()),
+                identifier=user_identifier
+            )
+            res: Response =  await update_record_in_vector_db(record_data)
+
+            if res.status_code == 200:
+                return JSONResponse(content={"message": "Record updated"}, status_code=status.HTTP_200_OK)
+            else:
+                return JSONResponse(content={"message": "Record updated, but not on agents db"}, status_code=status.HTTP_200_OK)
+
+
         else:
             return JSONResponse(content={"message": "Record could not updated"}, status_code=status.HTTP_400_BAD_REQUEST)
 

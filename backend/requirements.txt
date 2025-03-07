@@ -1,6 +1,7 @@
 fastapi==0.115.11
 fastapi-cli==0.0.7
 uvicorn==0.34.0
+sse-starlette==2.2.1
 
 #for database (later version of alchemy currently not compatible)
 SQLAlchemy==2.0.38
@@ -13,7 +14,7 @@ python-dotenv==1.0.1
 pydantic[email]
 
 #for accessing form data
-python-multipart==0.8
+python-multipart==0.0.20
 
 #Databases gives asyncio support for a range of databases.
 databases==0.9.0

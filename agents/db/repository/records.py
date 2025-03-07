@@ -8,13 +8,14 @@ from llama_index.vector_stores.lancedb import LanceDBVectorStore
 from llama_index.core.base.base_query_engine import BaseQueryEngine
 
 from db.vector_db import get_vector_store
+from AI.models import Models
 
 
 # always make sure that both embed model and llm model are same type
-embed_model = Models.get_embedding_model(Models.EmbeddingModels.GPT4)
-llm = Models.get_LLM(Models.AIModels.GPT4)
+embed_model = Models.get_embedding_model(Models.EmbeddingModels.OLLAMA)
+llm = Models.get_LLM(Models.AIModels.OLLAMA)
 
-def add_data_into_vector_store(record_id: str, table_name: str, doc: Document) -> bool:
+def add_data_into_vector_store(table_name: str, doc: Document) -> bool:
     isSaved = False
     try:
         vector_store: None | LanceDBVectorStore = get_vector_store(table_name, "append")

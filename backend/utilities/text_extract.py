@@ -48,13 +48,14 @@ def extract_text_from_pdf(file_path):
             
             result = reader.readtext(numpy_image, detail=0)
             full_text.append("\n".join(result))
+            full_text.append("===msai-labs page break===")
         full_text.append("===msai-labs page break===")
     
     unique_list = []
     for item in full_text:
         if item not in unique_list:
             unique_list.append(item)
-        elif item == "===msai-labs page break===":
+        elif item == "===msai-labs page break===" and unique_list[-1] != "===msai-labs page break===":
             unique_list.append(item)
 
     

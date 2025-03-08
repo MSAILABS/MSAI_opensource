@@ -13,9 +13,8 @@ router = APIRouter()
 @router.post("/chat")
 async def chat_route(request: Request, data: Chat_Agent_Query):
     try:
-        payload = Chat_Agent_Query(query=data.query, identifier=user_identifier)
-
-        response = await chat_with_agents(payload)
+        data.identifier = user_identifier
+        response = await chat_with_agents(data)
 
         data = json.loads(response.text)
         print(response.text)

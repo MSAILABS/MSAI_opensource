@@ -19,34 +19,46 @@ router = APIRouter()
 async def chat_route(request: Request, data: Chat_Agent_Query):
     try:
         await send_ai_thoughts("Processing Query.", data.identifier)
-        await send_ai_thoughts("Checking if this query needs records.", data.identifier)
-        prompt = f"""
-        question: {data.query}
-        
-        Does this question needs records for generating answer?"""
-
-        binary_judge_agent_response = str(await binary_judge_agent.run(prompt, data.identifier))
-        binary_judge_agent_response = binary_judge_agent_response.split("</think>")[-1]
 
         texts = []
-        if (binary_judge_agent_response.lower().find("no") == -1):
-            await send_ai_thoughts("Query need records information.", data.identifier)
-            table_name = remove_non_alphanumeric(data.identifier)
+        if data.use_records:
+            await send_ai_thoughts("Checking if this query needs records.", data.identifier)
+            prompt = f"""
+            question: {data.query}
+            
+            Does this question needs records for generating answer?"""
 
-            await send_ai_thoughts("Getting Records.", data.identifier)
-            response = record_query_tool.get_records(table_name=table_name, question=data.query)
+            binary_judge_agent_response = str(await binary_judge_agent.run(prompt, data.identifier))
+            binary_judge_agent_response = binary_judge_agent_response.split("</think>")[-1]
+
+            if (binary_judge_agent_response.lower().find("no") == -1):
+                await send_ai_thoughts("Query need records information.", data.identifier)
+                table_name = remove_non_alphanumeric(data.identifier)
+
+                await send_ai_thoughts("Getting Records.", data.identifier)
+                response = record_query_tool.get_records(table_name=table_name, question=data.query)
 
 
-            await send_ai_thoughts("Checking Relevance of the Records.", data.identifier)
-            for node in response:
-                if node.score > 0.2:
-                    texts.append(node.text)
+                await send_ai_thoughts("Checking Relevance of the Records.", data.identifier)
+                for node in response:
+                    if node.score > 0.1:
+                        texts.append(node.text)
+            else:
+                await send_ai_thoughts("Query does not need records information.", data.identifier)
         else:
-            await send_ai_thoughts("Query does not need records information.", data.identifier)
+            await send_ai_thoughts("Skipping records steps.", data.identifier)
 
 
         await send_ai_thoughts("Creating Prompt.", data.identifier)
-        prompt = f"""
+
+        prompt = ""
+        if len(data.context) > 0:
+            prompt += "The context of conversation is: "
+
+            for message in data.context:
+                prompt += f"\n{message['type']} message: {message['message']}\n"
+
+        prompt += f"""
             question: {data.query}
 
             {"generate answer using text below for the question provided above." if len(texts) > 0 else "Answer the question mentioned above."}

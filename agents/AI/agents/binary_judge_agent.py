@@ -38,6 +38,7 @@ class BinaryJudgeAgent(Base_Agent):
 
         Instructions:
         1. DO NOT use any tools, just give answer as "yes" or "no".
+        2. Your reply should Only have "yes" or "no". DO NOT ADD any other text.
 
         text by super ai agent:
         {"" if text is None else text}

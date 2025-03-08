@@ -44,11 +44,14 @@ export default function record({ records, get_records }: RecordProps) {
 
   const print_records = () => {
     return records.map((e) => (
-      <div className="card pt-4 rounded shadow" key={e["id"]}>
+      <div className="card pt-4 rounded-lg shadow" key={e["id"]}>
         <h2 className="text-xl font-bold mb-4 card-title line-clamp-1">
           {e["title"]}
         </h2>
-        <div className="grid grid-cols-5 gap-1 px-4 card-btns">
+        <div
+          className="gap-1 px-4 card-btns"
+          style={{ display: "grid", gridTemplateColumns: "auto 20px auto" }}
+        >
           <button
             className="flex justify-center px-1 items-center"
             onClick={() => edit_record(e.id, e.title, e.description)}
@@ -57,16 +60,6 @@ export default function record({ records, get_records }: RecordProps) {
               <i className="fa fa-edit" />
             </span>
             <span>Edit</span>
-          </button>
-          |
-          <button
-            style={{ color: "#008cff" }}
-            className="500 flex justify-center px-1 items-center"
-          >
-            <span className="mr-2">
-              <i className="fa fa-comments" />
-            </span>
-            <span>Chat</span>
           </button>
           |
           <button

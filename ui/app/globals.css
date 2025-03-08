@@ -67,8 +67,8 @@ body {
 /* Entire Chat  container */
 .chatArea {
   margin-top: 5vh;
-  width: 85%;
-  margin-left: 7%;
+  width: 90%;
+  margin-left: 5%;
   height: 77vh;
   overflow-y: auto;
   overflow-x: none;
@@ -115,11 +115,10 @@ body {
 
 .chatinput-container {
   display: grid;
-  width: 70%;
+  width: 80%;
   align-items: center;
   position: fixed;
   bottom: 30px;
-  right: 5%;
   background-color: rgb(31, 31, 31);
   padding: 10px;
   border-radius: 20px;
@@ -267,6 +266,10 @@ body {
 
   .chatinput-container {
     width: 90% !important;
+  }
+
+  .chat-bubble {
+    max-width: 80vw;
   }
 
   .records-area {

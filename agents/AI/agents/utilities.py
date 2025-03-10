@@ -7,7 +7,7 @@ from llama_index.core.base.agent.types import Task
 
 async def send_ai_thoughts(thought, identifier, retry = False):
     try:
-        RABBITMQ_SETTINGS = "amqp://guest:guest@127.0.0.1/"
+        RABBITMQ_SETTINGS = "amqp://guest:guest@rabbitmq/"
         EXCHANGE_NAME = "ai_thoughts"
 
         connection = await connect_robust(RABBITMQ_SETTINGS)

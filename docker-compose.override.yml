@@ -1,0 +1,13 @@
+version: '3'
+services:
+  agents:
+    volumes:
+      - ./agents:/agents
+
+  backend:
+    volumes:
+      - ./backend:/backend
+
+  ui:
+    volumes:
+      - ./ui:/ui

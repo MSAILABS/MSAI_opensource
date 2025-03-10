@@ -1,0 +1,11 @@
+# Ignore virtual environments
+./venv
+venv
+./DB_FILES
+DB_FILES
+DB_FILES/*
+./DB_FILES/*
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class

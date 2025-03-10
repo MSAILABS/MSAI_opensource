@@ -4,9 +4,13 @@ import config from "@/utilities/config";
 import Loading from "@/app/_components/loading";
 import Alert from "@/app/_components/alert";
 import axios from "axios";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function edit_record() {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [recordId, setRecordId] = useState<number | null>(null);
+
   const [loading, setLoading] = useState(false);
   const [resType, setResType] = useState({
     res: false,
@@ -17,15 +21,20 @@ function edit_record() {
   const titleInput = useRef<HTMLInputElement>(null);
   const descInput = useRef<HTMLTextAreaElement>(null);
 
-  let title = window.localStorage.getItem("title") || "";
-  let description = window.localStorage.getItem("description") || "";
-  let record_id = window.localStorage.getItem("record_id") || -1;
+  // Ensure localStorage is only accessed on the client side
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setTitle(window.localStorage.getItem("title") || "");
+      setDescription(window.localStorage.getItem("description") || "");
+      setRecordId(Number(window.localStorage.getItem("record_id")) || -1);
+    }
+  }, []);
 
   const saveChanges = async () => {
     if (
       (title == titleInput.current?.value &&
         description == descInput.current?.value) ||
-      record_id == -1
+      recordId == -1
     ) {
       return;
     }
@@ -34,7 +43,7 @@ function edit_record() {
 
     try {
       const res = await axios.post(
-        `${config.api_url}/edit_record/${record_id}`,
+        `${config.api_url}/edit_record/${recordId}`,
         {
           title: titleInput.current?.value,
           description: descInput.current?.value,
@@ -44,6 +53,8 @@ function edit_record() {
       if (res.status == 200) {
         resType.res = true;
         resType.message = res.data["message"];
+
+        setResType(resType);
       }
     } catch (err: any) {
       console.log(err);
@@ -51,6 +62,8 @@ function edit_record() {
       resType.res = true;
       resType.error = true;
       resType.message = err.response.data["message"];
+
+      setResType(resType);
     } finally {
       setLoading(false);
     }

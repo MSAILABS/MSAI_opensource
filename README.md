@@ -34,9 +34,9 @@ Happy coding!
 2. **Clone the Repository:**  
    Clone the project repository to your local environment.
 
-3. **Install UI Dependencies:**  Nde 20
+3. **Install UI Dependencies:**  
+   Node 20
    Open the `ui` folder in your terminal and run:
-   
 
    ```bash
    cd ui

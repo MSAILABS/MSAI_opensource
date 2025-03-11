@@ -34,7 +34,7 @@ Happy coding!
 2. **Clone the Repository:**  
    Clone the project repository to your local environment.
 
-3. **Install UI Dependencies:**  
+3. **Install UI Dependencies:**  Nde 20
    Open the `ui` folder in your terminal and run:
    
 
@@ -42,7 +42,7 @@ Happy coding!
    cd ui
    npm install
    ```
-   in WLS you may need to make sure Node 20 is installed.
+   in WSL/Linux you may need to make sure Node 20 is installed.
    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
    use NVM to select node version. If .next js not there run:
    ```bash

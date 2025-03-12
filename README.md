@@ -45,6 +45,15 @@ Happy coding!
    npm install
    ```
 
+   in WSL/Linux you may need to make sure Node 20 is installed.
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+   use NVM to select node version. If .next js not there run:
+
+   ```bash
+   ls -lah
+   npm run build
+   ```
+
    _Note: Docker requires the `.next` folder for the application to run._
 
 5. **Configure the UI Service:**  

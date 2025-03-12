@@ -1,7 +1,7 @@
 import json
 import logging as log
 
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Request, status, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
@@ -9,6 +9,7 @@ from api.agents_api.chat_api import chat_with_agents
 from api.agents_api.schemas.chat_schema import Chat_Agent_Query
 from core.configurations import user_identifier
 from db.repository.records import get_all_records_from_db
+from db.session import get_db
 
 router = APIRouter()
 

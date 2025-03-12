@@ -31,12 +31,14 @@ Happy coding!
 1. **Install Docker:**  
    Ensure Docker is installed on your machine.
 
-2. **Clone the Repository:**  
+2. **Install Node v20:**  
+   Make sure Node.js version 20.18.1 is installed on your machine.
+
+3. **Clone the Repository:**  
    Clone the project repository to your local environment.
 
-3. **Install UI Dependencies:**  
+4. **Install UI Dependencies:**  
    Open the `ui` folder in your terminal and run:
-   
 
    ```bash
    cd ui
@@ -45,15 +47,15 @@ Happy coding!
 
    _Note: Docker requires the `.next` folder for the application to run._
 
-5. **Configure the Agents Service:**  
+5. **Configure the UI Service:**  
+   In the `ui` folder, create a `.env` file. This file can be left blank if no variables are needed.
+
+6. **Configure the Agents Service:**  
    In the `agents` folder, create a `.env` file and add the following variables for using the Ollama service locally:
 
    - `OLLAMA_ENDPOINT` (example: `"http://localhost:11434"`)
    - `OLLAMA_LLM` (example: `"deepseek-r1:32b"`)
    - `OLLAMA_EMBED` (example: `"all-minilm"`)
-
-6. **Configure the UI Service:**  
-   In the `ui` folder, create a `.env` file. This file can be left blank if no variables are needed.
 
 7. **Build and Run Containers:**  
    From the repository root in your terminal, execute:
@@ -75,7 +77,7 @@ Happy coding!
    Ensure that Python 3.11 is installed on your system.
 
 2. **Install Node v20:**  
-   Make sure Node.js version 20 is installed on your machine.
+   Make sure Node.js version 20.18.1 is installed on your machine.
 
 3. **Install Ollama:**  
    Install the Ollama service and pull the required LLM and embedding models.

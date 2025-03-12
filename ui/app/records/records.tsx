@@ -15,7 +15,7 @@ interface Record {
   upload_date: string;
 }
 
-export default function records() {
+export default function records({ showUpBtn }: any) {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [records, setRecords] = useState<Record[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,10 +43,11 @@ export default function records() {
     <div className="text-center h-full records-area">
       <div className="record-add-btn" id="add-button">
         <a
+          style={{ display: showUpBtn ? "block" : "none" }}
           href="#add-button"
-          className="bg-green-500 text-white p-2 rounded ml-4 fixed bottom-4 right-4 flex items-center justify-center"
+          className="bg-green-500 text-white p-6 rounded ml-4 fixed bottom-4 flex items-center justify-center"
         >
-          <IoTriangle />
+          <IoTriangle style={{ fontSize: "25px" }} />
         </a>
         <Add_Record open={showAddDialog} setOpen={setShowAddDialog} />
       </div>
@@ -55,9 +56,11 @@ export default function records() {
           <Loading message={"Fetching Records..."} />
         </div>
       ) : (
-        <div className="pt-5 px-2 mx-2 records-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="pt-5 px-2 mx-2 records-container grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4 records_list_container">
           {records.length > 0 ? (
-            <List_Record records={records} get_records={get_records} />
+            <>
+              <List_Record records={records} get_records={get_records} />
+            </>
           ) : (
             <h1 className="absolute top-1/3 w-full left-0 text-center text-4xl">
               There are no records!!!

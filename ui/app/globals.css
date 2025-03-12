@@ -53,6 +53,7 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+  background: radial-gradient(#3c3c3c,#2c2c2c, #171717)
 }
 
 #sidebar-toggle:checked ~ .sidebar {
@@ -66,12 +67,20 @@ body {
 
 /* Entire Chat  container */
 .chatArea {
-  margin-top: 5vh;
-  width: 90%;
-  margin-left: 5%;
-  height: 77vh;
+  margin-top: 10px;
+  width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  height: 85vh;
   overflow-y: auto;
   overflow-x: none;
+  display: grid;
+  grid-template-rows: auto 100px;
+  gap: 10px;
+}
+
+.chatArea::-webkit-scrollbar {
+  width: 0px;
 }
 
 /* Chat-Bubbles container */
@@ -93,7 +102,7 @@ body {
 .chat-bubble {
   display: grid;
   padding: 20px;
-  margin: 10px 5px;
+  margin: 20px 5px;
   max-width: 50vw;
   border-radius: 20px;
   color: white;
@@ -115,13 +124,13 @@ body {
 
 .chatinput-container {
   display: grid;
-  width: 80%;
+  width: 750px;
   align-items: center;
-  position: fixed;
-  bottom: 30px;
-  background-color: rgb(31, 31, 31);
   padding: 10px;
-  border-radius: 20px;
+  border-radius: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: rgb(25, 25, 25);
 }
 
 .chat-box {
@@ -141,11 +150,13 @@ body {
   resize: none;
   outline: none;
   background-color: #252525;
+  z-index: 5;
 }
 
 .chat-buttons-left, .chat-buttons-right {
   display: flex;
   align-items: center;
+  z-index: 5;
 }
 
 .chat-buttons-left {
@@ -159,12 +170,12 @@ body {
 .chat-send-btn, .chat-mic-btn, .chat-attach-btn {
   background: none;
   border: none;
-  margin: 0 5px;
+  margin: 0px;
   cursor: pointer;
   color: #f1f1f1;
   font-size: 24px;
   border-radius: 5px;
-  padding: 23px;
+  padding: 20px 10px;
 }
 
 .chat-send-btn:hover, .chat-mic-btn:hover, .chat-attach-btn:hover {
@@ -181,20 +192,25 @@ body {
 
 .chat-bubble-container {
   padding: 10px;
-  height: 10vh;
+  overflow-y: auto;
+}
+
+.chat-bubble-container::-webkit-scrollbar {
+  width: 0px;
 }
 
 .thought-process {
-  position: relative;
-  left: 50%;
-  margin-bottom: 10px;
-  transform: translateX(-50%);
+  transform: translateX(-10px);
+  position: absolute;
+  bottom: 100px;
+  z-index: 4;
   max-height: 300px;
   background-color: rgb(31, 31, 31);
-  padding: 0px 10px 10px 10px;
+  padding: 0px 20px 15px 20px;
   line-height: 25px;
-  border-radius: 0px;
-  width: 100%;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  width: 750px;
   overflow-y: scroll;
   overflow-x: none;
 }
@@ -204,19 +220,33 @@ body {
 }
 
 .card {
-  background-color: #1f1f1f;
+  background-color: #fbfbfb;
+  color: black;
+  box-shadow: 2px 2px 5px black;
 }
 
 .card-text {
   border-top: 1px solid whitesmoke;
   background-color: #424242;
+  color: white;
+}
+
+.card-btns {
+  display: grid;
+  grid-template-columns: auto 20px auto;
+}
+
+.chatbot_record_btn {
+  margin-left: auto;
+  margin-top: -50px !important;
 }
 
 .record-add-btn button {
   display: grid;
+  width: 220px;
   justify-content: center;
   align-items: center;
-  grid-template-columns: 50px 120px;
+  grid-template-columns: 50px auto;
   transition-duration: .1s;
   margin: 20px 10px 0px auto;
 }
@@ -239,7 +269,74 @@ body {
 
 .main_screen {
   display: grid;
-  grid-template-columns: 200px auto;
+  max-width: 3840px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.record-toggle {
+  position: absolute;
+  top: 20px;
+  left: calc(50vw - 60px);
+}
+
+.links_div { 
+  display: flex; 
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px 10px;
+  width: 100vw;
+  max-width: 3840px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.links_logo {
+  display: grid;
+  grid-template-columns: 60px 130px;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+  margin-left: 20px;
+}
+
+.links_div_btn {
+  display: grid;
+  width: 100px;
+  height: 50px;
+  grid-template-columns: auto auto;
+  align-items: center;
+  background-color: #f1f1f1;
+  color: #1f1f1f;
+  padding: 8px 10px;
+  border-radius: 20px;
+  margin-right: 20px;
+  margin-top: 10px;
+}
+
+.overlay_for_records {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background-color: rgba(107, 107, 107, 0.61);
+  z-index: 6;
+}
+
+.records_sidebar {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  width: 50vw;
+  z-index: 9;
+  background-color: #2b2b2b;
+  height: 100vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  box-shadow: -1px -2px 10px gray;
+  transition-duration: .25s;
+  transform-origin: right;
 }
 
 .loading-icon {
@@ -257,26 +354,29 @@ body {
   }
 }
 
+.typed-out{
+  overflow: hidden;
+  border-right: .15em solid orange;
+  white-space: nowrap;
+  font-size: 1.6rem;
+  width: 0;
+  animation: 
+    typing 1s steps(40, end) forwards,
+    blink .9s infinite;
+}
 
-@media (max-width: 768px) {
-  .chatArea {
-    height: 73vh;
-    margin-bottom: 20vh;
-  }
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
 
-  .chatinput-container {
-    width: 90% !important;
-  }
+@keyframes blink {
+  from { border-color: transparent }
+  to { border-color: orange; }
+}
 
-  .chat-bubble {
-    max-width: 80vw;
-  }
 
-  .records-area {
-    margin-bottom: 50vh;
-    height: 73vh;
-  };
-
+@media (max-width: 1200px) {
   .record-description {
     display: -webkit-box;
     line-clamp: 5;
@@ -284,8 +384,112 @@ body {
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+}
 
-  .main_screen {
-    grid-template-columns: auto;
+@media (max-width: 768px) {
+  .chatArea {
+    width: 98vw;
+    margin-left: auto;
+    margin-right: auto;
+    height: 90vh;
+    overflow-y: auto;
+    overflow-x: none;
+    display: grid;
+    grid-template-rows: auto 100px;
+    gap: 10px;
+  }
+
+  .chatbot_intro {
+    width: 98%;
+  }
+
+  .typed-out{
+    white-space: wrap;
+  }
+
+  .chatbot_intro h1 {
+    width: 95vw;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+
+  .chatbot_intro p {
+    width: 90vw;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .chatinput-container {
+    width: 100%;
+    transform: scale(0.95);
+  }
+
+  .chat-bubble-container {
+    padding: 10px;
+    overflow-y: auto;
+    width: 95vw;
+    margin-left: auto;
+    margin-left: auto;
+  }
+  
+  .chat-bubble {
+    max-width: 80vw;
+  }
+
+  .thought-process {
+    width: 100%;
+    transform: translateX(0px);
+  }
+
+  .records-area {
+    margin-bottom: 50vh;
+    height: 73vh;
+  };
+
+  
+
+  .record-toggle {
+    transform: scale(0.9);
+  }
+
+  .links_logo {
+    transform: scale(0.8);
+    margin-left: 0px;
+  }
+
+}
+
+@media (max-width: 600px) {
+  .links_logo > h1 {
+    display: none;
+  } 
+
+  .links_div_btn {
+    width: 35px;
+    height: 40px;
+  }
+
+  .links_div_btn span {
+    display: none;
+  }
+
+  .card-btns {
+    display: grid;
+    grid-template-columns: auto 10px auto;
+  }
+
+  .record-add-btn button {
+    display: grid;
+    width: 180px;
+    grid-template-columns: 50px auto;
+    transition-duration: .1s;
+    margin: 20px auto 0px auto;
+  }
+}
+
+@media (max-width: 400px) {
+  .records_sidebar {
+    width: 60vw;
   }
 }

@@ -1,12 +1,16 @@
 "use client";
 
 import { useState, useRef, useEffect, Fragment } from "react";
+import { FaFolder } from "react-icons/fa";
 import axios from "axios";
 import config from "@/utilities/config";
 import { Field, Label, Switch } from "@headlessui/react";
+import Records from "../records/records";
 
 let sendActive = true;
 const chatbox = () => {
+  const [showRecords, setShowRecords] = useState(false);
+
   const inputMessage = useRef<HTMLTextAreaElement>(null);
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<any>([
@@ -23,9 +27,14 @@ const chatbox = () => {
     // { type: "user", message: "how are you" },
     // { type: "user", message: "how are you" },
     // { type: "bot", message: "fine" },
+    // { type: "bot", message: "not fine" },
   ]);
+  const lastItemRef = useRef<HTMLDivElement | null>(null);
   const [showThoughts, setShowThoughts] = useState(false);
-  const [thoughts, setThoughts] = useState<any>([]);
+  const [thoughts, setThoughts] = useState<any>([
+    // "!Hello!",
+    // "!Processing you query!",
+  ]);
   const [useRecords, setUseRecords] = useState(true);
   let chatkey = 0;
 
@@ -120,6 +129,12 @@ const chatbox = () => {
     startEventSource();
   }, []);
 
+  useEffect(() => {
+    if (lastItemRef.current) {
+      lastItemRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]); // Runs whenever 'items' changes
+
   const processMessage = (messages: any) => {
     let key = 9999;
     const filteredMessages = messages.filter((e: any) => e.length > 0);
@@ -133,25 +148,29 @@ const chatbox = () => {
 
   return (
     <>
-      <div className="chatArea">
-        <Field
-          className="flex justify-end fixed bg-color p-1"
-          style={{ marginTop: "-10px", borderRadius: "100px" }}
+      <button
+        className="links_div_btn chatbot_record_btn"
+        onClick={() => setShowRecords(!showRecords)}
+      >
+        <FaFolder /> <span>Records</span>
+      </button>
+      <Field className="flex justify-end fixed p-1 record-toggle">
+        <Label className="mr-2">Use Records</Label>
+        <Switch
+          checked={useRecords}
+          onChange={setUseRecords}
+          className="group inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition data-[checked]:bg-blue-600"
         >
-          <Label className="mr-2">Use Records</Label>
-          <Switch
-            checked={useRecords}
-            onChange={setUseRecords}
-            className="group inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition data-[checked]:bg-blue-600"
-          >
-            <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />
-          </Switch>
-        </Field>
+          <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />
+        </Switch>
+      </Field>
+      <div className="chatArea">
         <div className="chat-bubble-container" id="chat-bubble-container">
           {messages.length > 0 ? (
             <>
-              {messages.map((e: any) => (
+              {messages.map((e: any, index: number) => (
                 <div
+                  ref={index === messages.length - 1 ? lastItemRef : null}
                   key={chatkey++}
                   className={`chat-bubble ${
                     e["type"] == "user"
@@ -173,10 +192,12 @@ const chatbox = () => {
               )}
             </>
           ) : (
-            <div className="text-center grid gap-y-12 justify-center items-center pb-12 min-h-[60vh]">
-              <h1 className="text-2xl text-white p-1">
-                Welcome to MSAI LABS RAG + AI_Agents powered Chatbot.
-              </h1>
+            <div className="text-center grid gap-y-12 justify-center items-center pb-12 min-h-[60vh] chatbot_intro">
+              <div>
+                <h1 className="typed-out text-2xl text-white p-1">
+                  Welcome to MSAI LABS RAG + AI_Agents powered Chatbot.
+                </h1>
+              </div>
               <div className="grid grid-cols-1 gap-2 md:grid-cols-1">
                 <p className="col-span-1 bg-gray-100 p-4 md:p-5 text-gray-800 rounded-lg">
                   🤖 Use chatbot with records. <br />
@@ -213,7 +234,7 @@ const chatbox = () => {
             <textarea
               ref={inputMessage}
               id="inputBox"
-              className="chat-text-area w-full ml-5"
+              className="chat-text-area w-full ml-2"
               placeholder="Type a message"
             ></textarea>
             <button
@@ -225,6 +246,17 @@ const chatbox = () => {
             </button>
           </div>
         </div>
+      </div>
+      <div
+        style={{ display: showRecords ? "block" : "none" }}
+        className="overlay_for_records"
+        onClick={() => setShowRecords(!showRecords)}
+      ></div>
+      <div
+        style={{ transform: showRecords ? "scaleX(1)" : "scaleX(0)" }}
+        className="records_sidebar"
+      >
+        <Records />
       </div>
     </>
   );

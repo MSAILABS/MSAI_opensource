@@ -5,7 +5,7 @@ export default function page() {
   return (
     <div className="main_screen h-screen">
       <Links />
-      <Records />
+      <Records showUpBtn={true} />
     </div>
   );
 }

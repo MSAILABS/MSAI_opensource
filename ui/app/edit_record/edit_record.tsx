@@ -70,7 +70,10 @@ function edit_record() {
   };
 
   return (
-    <div className="records-area p-6 mt-5 md:mt-10 rounded-lg shadow-md">
+    <div
+      className="records-area p-6 mt-5 md:mt-10 rounded-lg shadow-md"
+      style={{ minHeight: "80vh" }}
+    >
       <h1 className="text-3xl font-bold mb-6 text-center text-white">
         Edit Record
       </h1>

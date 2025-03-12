@@ -23,19 +23,31 @@ async def add_record_into_vector_db(request: Request, record_data: RecordData):
         isSaved = False
         texts = record_data.record_description.split("===msai-labs page break===")
 
+        full_text = ""
 
-        for text in texts:
-            if (text == ""):
+        for index, text in enumerate(texts):
+            full_text += text
+
+            if (full_text == ""):
                 continue
-            prompt = f"""
-                Give a summary of this text below.
+            
+            if len(full_text) < 2000 and index < len(texts) - 1:
+                continue
+            
+            response = ""
 
-                {text}
-            """
+            if len(full_text) < 2000:
+                prompt = f"""
+                    Give a summary of this text below.
 
-            response = str(await content_generator_agent.run(text=prompt))
+                    {full_text}
+                """
 
-            response = response.split("</think>")[-1]
+                response = str(await content_generator_agent.run(text=prompt))
+
+                response = response.split("</think>")[-1]
+            else:
+                response = full_text
 
             now = datetime.now()
             new_metadata = {
@@ -44,7 +56,7 @@ async def add_record_into_vector_db(request: Request, record_data: RecordData):
                 "upload_month": now.month,
                 "upload_day": now.day,
                 "title": record_data.record_title,
-                "summary": response
+                "summary": full_text
             }
 
             doc = Document(text=text, metadata=new_metadata)
@@ -52,6 +64,8 @@ async def add_record_into_vector_db(request: Request, record_data: RecordData):
             table_name = remove_non_alphanumeric(record_data.identifier)
             
             isSaved = add_data_into_vector_store(table_name=table_name, doc=doc)
+
+            full_text = ""
 
         if (isSaved):
             return JSONResponse(content="Record data added into vector store", status_code=status.HTTP_201_CREATED)

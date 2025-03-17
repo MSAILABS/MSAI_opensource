@@ -5,12 +5,14 @@ from fastapi import APIRouter, Request, status
 from fastapi.responses import JSONResponse
 
 from llama_index.core.schema import Document
+from sqlalchemy import table
 
 from AI.agents.content_generator_agent import ContentGeneratorAgent
 from AI.agents.binary_judge_agent import BinaryJudgeAgent
 from db.repository.records import add_data_into_vector_store, delete_user_record
 from router.route_utilities import remove_non_alphanumeric
 from router.schemas.records import RecordData, RecordDataDelete, RecordDataQuery
+from AI.models import embedding_model
 
 router = APIRouter()
 
@@ -20,6 +22,13 @@ binary_judge_agent = BinaryJudgeAgent()
 @router.post("/add_record_into_vector_db")
 async def add_record_into_vector_db(request: Request, record_data: RecordData):
     try:
+        table_name = remove_non_alphanumeric(record_data.identifier)
+
+        # deleting old record if record is already present
+        # reason for this that if user vectorized record previously using different embedding_model and then after change model.
+        # it is possible that record is updated and we have to redo vectorization because previous vectorization does not match old text.
+        delete_user_record(table_name=table_name, record_id=record_data.record_id)
+
         isSaved = False
         texts = record_data.record_description.split("===msai-labs page break===")
 
@@ -60,15 +69,13 @@ async def add_record_into_vector_db(request: Request, record_data: RecordData):
             }
 
             doc = Document(text=text, metadata=new_metadata)
-
-            table_name = remove_non_alphanumeric(record_data.identifier)
             
             isSaved = add_data_into_vector_store(table_name=table_name, doc=doc)
 
             full_text = ""
 
         if (isSaved):
-            return JSONResponse(content="Record data added into vector store", status_code=status.HTTP_201_CREATED)
+            return JSONResponse(content={"message": "Record data added into vector store", "embedding_model": embedding_model.value}, status_code=status.HTTP_201_CREATED)
         else:
             return JSONResponse(content="Cannot add record data into vector store", status_code=status.HTTP_400_BAD_REQUEST)
     except Exception as e:

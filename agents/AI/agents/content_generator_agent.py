@@ -1,6 +1,6 @@
 from AI.agents.base_class.base_agent import Base_Agent
 from AI.agents.utilities import run_agent_task
-from AI.models import Models
+from AI.models import Models, llm_model
 
 from llama_index.core.agent import ReActAgent
 
@@ -11,7 +11,7 @@ class ContentGeneratorAgent(Base_Agent):
         self.description = "Agent used to generate content based on user input."
         self.purpose = "You are an AI agent responsible to generate content based on user input. If you need more information, ask for it."
         self.agent = None
-        self.llm = Models.get_LLM(Models.AIModels.OLLAMA)
+        self.llm = Models.get_LLM(llm_model)
         self.__setup_agent__()
 
     def __setup_agent__(self):

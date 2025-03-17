@@ -9,13 +9,13 @@ from llama_index.core.retrievers import VectorIndexAutoRetriever
 from llama_index.vector_stores.lancedb.base import LanceDBVectorStore
 
 from db.vector_db import get_vector_store
-from AI.models import Models
+from AI.models import Models, llm_model, embedding_model
 
 
 class RecordQueryTool():
     def __init__(self):
-        self.llm = Models.get_LLM(Models.AIModels.OLLAMA)
-        self.embed_model = Models.get_embedding_model(Models.EmbeddingModels.OLLAMA)
+        self.llm = Models.get_LLM(llm_model)
+        self.embed_model = Models.get_embedding_model(embedding_model)
 
     def get_records(self, table_name: str, question: str):
         try:

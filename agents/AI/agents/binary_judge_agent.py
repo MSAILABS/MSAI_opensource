@@ -2,7 +2,7 @@ from llama_index.core.agent import ReActAgent
 
 from AI.agents.base_class.base_agent import Base_Agent
 from AI.agents.utilities import run_agent_task
-from AI.models import Models
+from AI.models import Models, llm_model
 
 class BinaryJudgeAgent(Base_Agent):
     def __init__(self):
@@ -10,7 +10,7 @@ class BinaryJudgeAgent(Base_Agent):
         self.description = 'Agent used to check prompt and only give answer as "yes" or "no".'
         self.purpose = 'you are an ai agent used to check prompt and only give answer as "yes" or "no". If you need more information, ask for it.'
         self.agent = None
-        self.llm = Models.get_LLM(Models.AIModels.OLLAMA)
+        self.llm = Models.get_LLM(llm_model)
         self.__setup_agent__()
 
     def __setup_agent__(self):

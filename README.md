@@ -56,17 +56,20 @@ Happy coding!
 
    _Note: Docker requires the `.next` folder for the application to run._
 
-5. **Configure the UI Service:**  
-   In the `ui` folder, create a `.env` file. This file can be left blank if no variables are needed.
-
-6. **Configure the Agents Service:**  
+5. **Configure the Agents Service:**  
    In the `agents` folder, create a `.env` file and add the following variables for using the Ollama service locally:
 
    - `OLLAMA_ENDPOINT` (example: `"http://localhost:11434"`)
    - `OLLAMA_LLM` (example: `"deepseek-r1:32b"`)
    - `OLLAMA_EMBED` (example: `"all-minilm"`)
 
-7. **Build and Run Containers:**  
+   and for adding OPENAI added:
+
+   - `AZURE_HEALTHSCANNER_UK_EMBBED_KEY`
+   - `AZURE_HEALTHSCANNER_UK_EMBBED_ENDPOINT`
+   - `AZURE_HEALTHSCANNER_UK_EMBBED_VERSION`
+
+6. **Build and Run Containers:**  
    From the repository root in your terminal, execute:
 
    ```bash
@@ -75,7 +78,7 @@ Happy coding!
 
    This command builds the Docker images and starts the containers.
 
-8. **Access the Application:**  
+7. **Access the Application:**  
    Once the containers are running, open your browser and navigate to [http://localhost:3000](http://localhost:3000) to access the UI and run the application.
 
 ---

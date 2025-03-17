@@ -14,7 +14,7 @@ export default function links() {
   return (
     <div className="links_div">
       <div className="links_logo" onClick={() => Redirect("/chatbot")}>
-        <Image
+        {/* <Image
           src={logo}
           alt="logo"
           style={{
@@ -22,7 +22,7 @@ export default function links() {
             height: "60px",
             borderRadius: "30px",
           }}
-        />
+        /> */}
         <h1 className="text-2xl">MSAI LABS</h1>
       </div>
       {pathname.includes("/edit_record") && (

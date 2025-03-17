@@ -69,6 +69,7 @@ export default function add_records({ open, setOpen }: AddRecordsProps) {
       <button
         onClick={() => setOpen(true)}
         className="bg-blue-500 text-white py-2 rounded"
+        style={{ gridTemplateColumns: "50px auto" }}
       >
         <p className="text-2xl">+</p>
         <p className="mr-2 record-add-text">Add Records</p>

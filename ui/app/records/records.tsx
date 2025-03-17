@@ -13,11 +13,14 @@ interface Record {
   title: string;
   description: string;
   upload_date: string;
+  vectorized: boolean;
+  embedding_model: string;
 }
 
 export default function records({ showUpBtn }: any) {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [records, setRecords] = useState<Record[]>([]);
+  const [embeddingModel, setEmbeddingModel] = useState("");
   const [loading, setLoading] = useState(true);
 
   const get_records = async () => {
@@ -27,6 +30,7 @@ export default function records({ showUpBtn }: any) {
 
       if (res) {
         setRecords(res.data?.records);
+        setEmbeddingModel(res.data?.embedding_model);
       }
     } catch (err) {
       console.log(err);
@@ -49,24 +53,24 @@ export default function records({ showUpBtn }: any) {
         >
           <IoTriangle style={{ fontSize: "25px" }} />
         </a>
-        <Add_Record open={showAddDialog} setOpen={setShowAddDialog} />
+        <div className="button_div grid">
+          <p className="font-bold mt-5">
+            Active Vectorizing Model: {embeddingModel}
+          </p>
+          <Add_Record open={showAddDialog} setOpen={setShowAddDialog} />
+        </div>
       </div>
       {loading ? (
         <div className="mt-20">
           <Loading message={"Fetching Records..."} />
         </div>
       ) : (
-        <div className="pt-5 px-2 mx-2 records-container grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4 records_list_container">
-          {records.length > 0 ? (
-            <>
-              <List_Record records={records} get_records={get_records} />
-            </>
-          ) : (
-            <h1 className="absolute top-1/3 w-full left-0 text-center text-4xl">
-              There are no records!!!
-            </h1>
-          )}
-        </div>
+        <List_Record
+          records={records}
+          get_records={get_records}
+          setRecords={setRecords}
+          embeddingModel={embeddingModel}
+        />
       )}
     </div>
   );

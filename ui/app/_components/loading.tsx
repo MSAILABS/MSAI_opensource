@@ -1,4 +1,4 @@
-export default function loading({ message }: any) {
+export default function loading({ message, textSizeClass }: any) {
   return (
     <div className="text-center mb-4">
       <svg
@@ -21,7 +21,9 @@ export default function loading({ message }: any) {
           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
         ></path>
       </svg>
-      <span className="text-white text-2xl">
+      <span
+        className={`text-white ${textSizeClass ? textSizeClass : "text-2xl"}`}
+      >
         {message ? message : "loading..."}
       </span>
     </div>

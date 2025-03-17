@@ -7,6 +7,7 @@ from docx import Document
 import easyocr
 from PIL import Image
 import io
+import hashlib
 
 def extract_text_from_docx(file_path):
     doc: Document = Document(file_path)
@@ -28,6 +29,16 @@ def extract_text_from_txt(file_path):
     full_text += "\n===msai-labs page break==="
     return full_text
 
+
+
+processed_images = set()
+
+def get_image_hash(image):
+    hasher = hashlib.md5()
+    hasher.update(image.tobytes())
+    return hasher.hexdigest()
+
+
 def extract_text_from_pdf(file_path):
     dir_path = os.path.join(os.getcwd(), "easy_ocr_model") 
 
@@ -44,11 +55,15 @@ def extract_text_from_pdf(file_path):
             base_image = image.data
             image_bytes = io.BytesIO(base_image)
             pil_image = Image.open(image_bytes).convert('RGB')
-            numpy_image = np.array(pil_image)
-            
-            result = reader.readtext(numpy_image, detail=0)
-            full_text.append("\n".join(result))
-            full_text.append("===msai-labs page break===")
+
+            image_hash = get_image_hash(pil_image)
+        
+            if image_hash not in processed_images:
+                numpy_image = np.array(pil_image)
+                
+                result = reader.readtext(numpy_image, detail=0)
+                full_text.append("\n".join(result))
+                full_text.append("===msai-labs page break===")
         full_text.append("===msai-labs page break===")
     
     unique_list = []

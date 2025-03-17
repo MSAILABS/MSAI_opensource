@@ -11,13 +11,43 @@ def get_all_records_from_db(db: Session):
         serialized_records = []
 
         for record in records:
-            serialized_records.append({"id": record.id, "title": record.title, "description": record.description, "upload_date": record.upload_date.strftime("%Y-%m-%d %H:%M:%S")})
+            serialized_records.append({"id": record.id, "title": record.title, "description": record.description, "upload_date": record.upload_date.strftime("%Y-%m-%d %H:%M:%S"), "vectorized": record.vector_processed, "embedding_model": record.embedding_model})
         
         return serialized_records
     except Exception as e:
         log.error("Error on getting all records from database")
         log.error(e)
         return []
+    
+def get_record_by_id(record_id: int, db: Session):
+    try:
+        record = db.query(Records).filter(Records.id == record_id).first()
+        return record
+    except Exception as e:
+        log.error("Error on getting record using record_id from database")
+        log.error(e)
+        return None
+
+
+def mark_record_as_vectorized(record_id, embedding_model, db: Session):
+    try:
+        record = db.query(Records).filter(Records.id == record_id).first()
+
+        if not record:
+            log.warning(f"Record with ID {record_id} not found.")
+            return None
+
+        record.vector_processed = True
+        record.embedding_model = embedding_model
+        db.commit()
+        db.refresh(record)  # Ensures updated state is returned
+        return record
+    except Exception as e:
+        db.rollback()  # Ensure rollback on failure
+        log.error("Error on updating record vector_processed flag using record_id from database")
+        log.error(e)
+        return None
+
 
 def add_record_into_db(title: str, text: str, db: Session) -> Records | None:
     try:
@@ -33,6 +63,7 @@ def add_record_into_db(title: str, text: str, db: Session) -> Records | None:
         db.rollback()
         log.error("Error on adding new record in database")
         log.error(e)
+        return None
 
 
 def delete_record_from_db(record_id: int, db: Session):

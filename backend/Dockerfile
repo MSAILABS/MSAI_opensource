@@ -2,9 +2,12 @@ FROM python:3.11-slim AS backend
 
 WORKDIR /backend
 
-COPY . .
+# Copy requirements file first to enable caching for dependency installation
+COPY requirements.txt .
 
-# Create and activate a virtual environment
-RUN /bin/bash -c "pip install -r requirements.txt"
+# Install dependencies
+RUN pip install -r requirements.txt
+
+COPY . .
 
 CMD ["python", "./main.py"]

@@ -33,29 +33,16 @@ async def chat_route(request: Request, data: Chat_Agent_Query):
 
         texts = []
         if data.use_records:
-            await send_ai_thoughts("Checking if this query needs records.", data.identifier)
-            prompt = f"""
-            question: {data.query}
-            
-            Does this question needs records for generating answer? remember that user may be uploaded record about this question and we have access to every record that user uploaded."""
+            table_name = remove_non_alphanumeric(data.identifier)
 
-            binary_judge_agent_response = str(await binary_judge_agent.run(prompt, data.identifier))
-            binary_judge_agent_response = binary_judge_agent_response.split("</think>")[-1]
-
-            if (binary_judge_agent_response.lower().find("no") == -1):
-                await send_ai_thoughts("Query need records information.", data.identifier)
-                table_name = remove_non_alphanumeric(data.identifier)
-
-                await send_ai_thoughts("Getting Records.", data.identifier)
-                response = record_query_tool.get_records(table_name=table_name, question=data.query)
+            await send_ai_thoughts("Getting Records.", data.identifier)
+            response = record_query_tool.get_records(table_name=table_name, question=data.query)
 
 
-                await send_ai_thoughts("Checking Relevance of the Records.", data.identifier)
-                for node in response:
-                    if node.score > 0.1:
-                        texts.append(node.text)
-            else:
-                await send_ai_thoughts("Query does not need records information.", data.identifier)
+            await send_ai_thoughts("Checking Relevance of the Records.", data.identifier)
+            for node in response:
+                if node.score > 0:
+                    texts.append(node.text)
         else:
             await send_ai_thoughts("Skipping records steps.", data.identifier)
 

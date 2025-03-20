@@ -25,12 +25,12 @@ export default function add_records({ open, setOpen }: AddRecordsProps) {
     const file = inputFile.current?.files?.[0];
     if (!file) return;
 
-    const allowedExtensions = [".docx", ".doc", ".txt", ".pdf"];
+    const allowedExtensions = [".docx", ".txt", ".pdf"];
     const fileExtension = file.name.split(".").pop()?.toLowerCase();
 
     if (!fileExtension || !allowedExtensions.includes(`.${fileExtension}`)) {
       alert(
-        "Unsupported file type. Please upload a .docx, .doc, .txt, or .pdf file."
+        "Unsupported file type. Please upload a .docx, .txt, or .pdf file."
       );
       return;
     }
@@ -101,7 +101,7 @@ export default function add_records({ open, setOpen }: AddRecordsProps) {
                     <div className="mt-4">
                       <p className="text-sm text-gray-200">
                         Select the record you want to add. Supported extensions
-                        are .docx, .doc, .txt, .pdf.
+                        are .docx, .txt, .pdf.
                       </p>
                       <input
                         ref={inputFile}

@@ -256,7 +256,7 @@ const chatbox = () => {
         style={{ transform: showRecords ? "scaleX(1)" : "scaleX(0)" }}
         className="records_sidebar"
       >
-        <Records />
+        <Records showUpBtn={false} showRecords={showRecords} />
       </div>
     </>
   );

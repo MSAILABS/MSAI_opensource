@@ -17,7 +17,7 @@ interface Record {
   embedding_model: string;
 }
 
-export default function records({ showUpBtn }: any) {
+export default function records({ showUpBtn, showRecords }: any) {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [records, setRecords] = useState<Record[]>([]);
   const [embeddingModel, setEmbeddingModel] = useState("");
@@ -40,8 +40,10 @@ export default function records({ showUpBtn }: any) {
   };
 
   useEffect(() => {
-    get_records();
-  }, [showAddDialog]);
+    if (showRecords) {
+      get_records();
+    }
+  }, [showAddDialog, showRecords]);
 
   return (
     <div className="text-center h-full records-area">

@@ -237,7 +237,7 @@ export default function record({
                                 as="h3"
                                 className="text-base font-semibold text-white"
                               >
-                                Revectoriz Record
+                                Revectorize Record
                               </DialogTitle>
                               <div className="mt-4">
                                 <p className="text-sm text-gray-200">

@@ -42,7 +42,7 @@ async def add_record(file: UploadFile, db: Session = Depends(get_db)):
     try:
         # Check file extension
         file_extension = os.path.splitext(file.filename)[1].lower()
-        if file_extension not in [".docx", ".doc", ".txt", ".pdf"]:
+        if file_extension not in [".docx", ".txt", ".pdf"]:
             raise HTTPException(status_code=400, detail="Invalid file format. Only .docx, .doc, .txt, .pdf are allowed.")
         
         file_path = save_upload_file(file)

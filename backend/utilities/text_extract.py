@@ -1,27 +1,21 @@
+from docx.document import Document
 import numpy as np
 import os
 import PyPDF2
-from docx.document import Document
-import textract
-from docx import Document
+import logging as log
+import docx
 import easyocr
 from PIL import Image
 import io
 import hashlib
 
 def extract_text_from_docx(file_path):
-    doc: Document = Document(file_path)
+    doc: Document = docx.Document(file_path)
     full_text = []
     for para in doc.paragraphs:
         full_text.append(para.text)
     full_text.append("===msai-labs page break===")
     return '\n'.join(full_text)
-
-def extract_text_from_doc(file_path):
-    text = textract.process(file_path)
-    full_text = text.decode('utf-8')
-    full_text += "\n===msai-labs page break==="
-    return full_text
 
 def extract_text_from_txt(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
@@ -52,18 +46,23 @@ def extract_text_from_pdf(file_path):
         full_text.append(" ".join(page.extract_text().split("\n")))
         images = page.images
         for image in images:
-            base_image = image.data
-            image_bytes = io.BytesIO(base_image)
-            pil_image = Image.open(image_bytes).convert('RGB')
+            try:
+                base_image = image.data
+                image_bytes = io.BytesIO(base_image)
+                pil_image = Image.open(image_bytes).convert('RGB')
 
-            image_hash = get_image_hash(pil_image)
-        
-            if image_hash not in processed_images:
-                numpy_image = np.array(pil_image)
-                
-                result = reader.readtext(numpy_image, detail=0)
-                full_text.append("\n".join(result))
-                full_text.append("===msai-labs page break===")
+                image_hash = get_image_hash(pil_image)
+            
+                if image_hash not in processed_images:
+                    numpy_image = np.array(pil_image)
+                    
+                    result = reader.readtext(numpy_image, detail=0)
+                    full_text.append("\n".join(result))
+                    full_text.append("===msai-labs page break===")
+            except Exception as internal_exception:
+                log.error("error on image extract from pdf")
+                log.error(internal_exception)
+
         full_text.append("===msai-labs page break===")
     
     unique_list = []
@@ -80,8 +79,6 @@ def extract_text(file_path):
     _, file_extension = os.path.splitext(file_path)
     if file_extension == '.docx':
         return extract_text_from_docx(file_path)
-    elif file_extension == '.doc':
-        return extract_text_from_doc(file_path)
     elif file_extension == '.txt':
         return extract_text_from_txt(file_path)
     elif file_extension == '.pdf':

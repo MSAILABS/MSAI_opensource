@@ -9,9 +9,9 @@ from llama_index.embeddings.azure_openai import AzureOpenAIEmbedding
 
 # loading environment variables
 load_dotenv()
-gpt_embed_api_key = os.getenv("AZURE_HEALTHSCANNER_UK_EMBBED_KEY")
-gpt_embed_endpoint = os.getenv("AZURE_HEALTHSCANNER_UK_EMBBED_ENDPOINT")
-gpt_embed_version = os.getenv("AZURE_HEALTHSCANNER_UK_EMBBED_VERSION")
+gpt_embed_api_key = os.getenv("AZURE_HEALTHSCANNER_UK_EMBBED_SMALL_KEY")
+gpt_embed_endpoint = os.getenv("AZURE_HEALTHSCANNER_UK_EMBBED_SMALL_ENDPOINT")
+gpt_embed_version = os.getenv("AZURE_HEALTHSCANNER_UK_EMBBED_SMALL_VERSION")
 
 print(f"embedding api key: {gpt_embed_api_key}")
 print(f"embedding endpoint key: {gpt_embed_endpoint}")
@@ -29,6 +29,7 @@ class Models:
     class EmbeddingModels(Enum):
         ALL_LLM_MINI = "all_lm_mini"
         OPENAI = "openai"
+        MISTRAL = "avr/sfr-embedding-mistral"
 
     @abstractmethod
     def get_LLM(ai_model: AIModels, temperature: float = -1) -> Ollama:
@@ -46,7 +47,7 @@ class Models:
     @abstractmethod
     def get_embedding_model(embed_model: EmbeddingModels) -> OllamaEmbedding:
         match embed_model:
-            case Models.EmbeddingModels.ALL_LLM_MINI:
+            case Models.EmbeddingModels.ALL_LLM_MINI | Models.EmbeddingModels.MISTRAL:
                 return OllamaEmbedding(
                         base_url= ollama_endpoint,
                         model_name=ollama_embed_name

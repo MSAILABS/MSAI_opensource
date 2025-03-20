@@ -68,7 +68,7 @@ async def add_record_into_vector_db(request: Request, record_data: RecordData):
                 "summary": full_text
             }
 
-            doc = Document(text=text, metadata=new_metadata)
+            doc = Document(text=full_text, metadata=new_metadata)
             
             isSaved = add_data_into_vector_store(table_name=table_name, doc=doc)
 

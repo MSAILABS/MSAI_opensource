@@ -47,7 +47,7 @@ class RecordQueryTool():
 
             vector_store: None | LanceDBVectorStore = get_vector_store(table_name, "read")
 
-            vector_index: VectorStoreIndex = VectorStoreIndex.from_vector_store(vector_store=vector_store, embed_model=self.embed_model)
+            # vector_index: VectorStoreIndex = VectorStoreIndex.from_vector_store(vector_store=vector_store, embed_model=self.embed_model)
 
             data_nodes: List[BaseNode] = vector_store.get_nodes()
 

@@ -2,14 +2,17 @@
 
 import { useState, useRef, useEffect, Fragment } from "react";
 import { FaFolder } from "react-icons/fa";
+import { IoOptionsOutline } from "react-icons/io5";
 import axios from "axios";
 import config from "@/utilities/config";
 import { Field, Label, Switch } from "@headlessui/react";
 import Records from "../records/records";
+import Link from "next/link";
 
 let sendActive = true;
 const chatbox = () => {
   const [showRecords, setShowRecords] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const inputMessage = useRef<HTMLTextAreaElement>(null);
   const [loading, setLoading] = useState(false);
@@ -36,6 +39,9 @@ const chatbox = () => {
     // "!Processing you query!",
   ]);
   const [useRecords, setUseRecords] = useState(true);
+
+  const [numberOfChunks, setNumberOfChunks] = useState(2);
+
   let chatkey = 0;
 
   const sendMessage = async () => {
@@ -45,13 +51,30 @@ const chatbox = () => {
     )
       return;
 
+    if (numberOfChunks < 1 && useRecords == true) {
+      alert(
+        "number of chunks should be greater then 0, and if you do not want to use records switch off use records at the top of page"
+      );
+      return;
+    }
+
+    if (numberOfChunks > 10) {
+      alert("number of chunks should be between 1 to 10");
+      return;
+    }
+
     console.log(inputMessage.current?.value);
 
-    const userMessage = { message: inputMessage.current?.value, type: "user" };
+    const userMessage = {
+      message: inputMessage.current?.value,
+      type: "user",
+      records_info: [],
+    };
     setMessages((prevMessages: any) => [...prevMessages, userMessage]);
 
     try {
       setLoading(true);
+      if (showSettings == true) setShowSettings(false);
 
       sendActive = false;
       setShowThoughts(true);
@@ -65,15 +88,33 @@ const chatbox = () => {
         query: inputMessage.current?.value,
         context: context,
         use_records: useRecords,
+        number_of_chunks: numberOfChunks,
       });
 
-      const botMessage = { message: response.data.message, type: "bot" };
+      console.log(response);
+
+      let temp_records_info = [];
+
+      for (let i = 0; i < response.data.records_ids.length; i++) {
+        temp_records_info.push({
+          id: response.data.records_ids[i],
+          title: response.data.records_titles[i],
+        });
+      }
+
+      console.log(temp_records_info);
+      const botMessage = {
+        message: response.data.message,
+        type: "bot",
+        records_info: temp_records_info,
+      };
       setMessages((prevMessages: any) => [...prevMessages, botMessage]);
     } catch (err) {
       console.log(err);
       const errMessage = {
         message: "Error occured, can not process the query.",
         type: "error",
+        records_info: [],
       };
       setMessages((prevMessages: any) => [...prevMessages, errMessage]);
     } finally {
@@ -181,6 +222,20 @@ const chatbox = () => {
                   }`}
                 >
                   {processMessage(e["message"].split("\n"))}
+
+                  {e["records_info"] && e["records_info"].length > 0 && (
+                    <>
+                      <hr style={{ margin: "20px 0px" }} />
+                      <p style={{ marginBottom: "10px" }}>
+                        Records used for AI response
+                      </p>
+                      {e["records_info"].map((e: any, index: number) => (
+                        <p style={{ margin: "5px 0px" }} key={index}>
+                          Id: {e["id"]}, Title: {e["title"]}
+                        </p>
+                      ))}
+                    </>
+                  )}
                 </div>
               ))}
               {loading && (
@@ -213,24 +268,55 @@ const chatbox = () => {
           )}
         </div>
         <div className="chatinput-container">
-          <div
-            className="thought-process w-full"
-            id="thought-process-div"
-            style={{
-              display: showThoughts ? "block" : "none",
-              overflowY: "auto",
-            }}
-          >
-            {thoughts.map((e: any, index: number) => (
-              <p key={index}>
-                {index === thoughts.length - 1 && (
-                  <span className="loading-icon">⏳</span>
-                )}
-                {e.slice(1, -1)}
-              </p>
-            ))}
-          </div>
+          {showThoughts && (
+            <div
+              className="thought-process w-full"
+              id="thought-process-div"
+              style={{
+                overflowY: "auto",
+              }}
+            >
+              {thoughts.map((e: any, index: number) => (
+                <p key={index}>
+                  {index === thoughts.length - 1 && (
+                    <span className="loading-icon">⏳</span>
+                  )}
+                  {e.slice(1, -1)}
+                </p>
+              ))}
+            </div>
+          )}
+          {showSettings && (
+            <div
+              className="thought-process w-full border-t border-white bg-gray-700"
+              id="thought-process-div"
+              style={{
+                overflowY: "auto",
+              }}
+            >
+              <div className="grid grid-cols-2 place-items-center gap-4 p-3">
+                <p>Number of chunks used for AI response</p>
+                <input
+                  style={{ width: "70px", height: "40px" }}
+                  className="px-2 bg-gray-800 color-white border-2-white rounded-lg text-center"
+                  type="number"
+                  min={1}
+                  max={10}
+                  placeholder="Number of Chunks"
+                  defaultValue={2}
+                  onChange={(e) => setNumberOfChunks(parseInt(e.target.value))}
+                />
+              </div>
+            </div>
+          )}
           <div className="inputArea w-full flex items-center">
+            <button
+              id="options-btn"
+              className="chat-send-btn"
+              onClick={() => setShowSettings(!showSettings)}
+            >
+              <IoOptionsOutline />
+            </button>
             <textarea
               ref={inputMessage}
               id="inputBox"

@@ -32,17 +32,34 @@ async def chat_route(request: Request, data: Chat_Agent_Query):
         await send_ai_thoughts("Processing Query.", data.identifier)
 
         texts = []
-        if data.use_records:
+        records_ids = []
+        records_titles = []
+        if data.use_records or data.number_of_chunks < 1:
             table_name = remove_non_alphanumeric(data.identifier)
 
             await send_ai_thoughts("Getting Records.", data.identifier)
-            response = record_query_tool.get_records(table_name=table_name, question=data.query)
+            if data.number_of_chunks is None:
+                number_of_chunks_to_retrive = 2
+            else:
+                number_of_chunks_to_retrive = data.number_of_chunks if data.number_of_chunks <= 10 else 10
 
+            response = record_query_tool.get_records(table_name=table_name, question=data.query, number_of_chunks_to_retrive=number_of_chunks_to_retrive)
 
             await send_ai_thoughts("Checking Relevance of the Records.", data.identifier)
-            for node in response:
-                if node.score > 0:
-                    texts.append(node.text)
+            
+            if len(response) > 0:
+                # Sort the list by the 'score' property in descending order and get the top 2
+                sorted_records = sorted(response, key=lambda x: x.score, reverse=True)
+
+                # this logic below is for getting top 2 records from sorted records
+                try:
+                    for i in range(len(sorted_records)):
+                        texts.append(sorted_records[i].text)
+                        if sorted_records[i].metadata["record_id"] not in records_ids:
+                            records_ids.append(sorted_records[i].metadata["record_id"])
+                            records_titles.append(sorted_records[i].metadata["title"])
+                except:
+                    pass
         else:
             await send_ai_thoughts("Skipping records steps.", data.identifier)
 
@@ -59,7 +76,9 @@ async def chat_route(request: Request, data: Chat_Agent_Query):
         prompt += f"""
             question: {data.query}
 
-            {"generate answer using text below for the question provided above." if len(texts) > 0 else "Answer the question mentioned above."}
+            {"generate answer for the question" if len(texts) > 0 else "Answer the question mentioned above."}
+
+            {"only use text below if the question needs, otherwise ignore text below."}
 
             {"text: "if len(texts) > 0 else ""}
         """
@@ -71,7 +90,7 @@ async def chat_route(request: Request, data: Chat_Agent_Query):
         content_agent_response = str(await content_generator_agent.run(prompt, data.identifier))
         content_agent_response = content_agent_response.split("</think>")[-1]
 
-        return JSONResponse(content={"message": content_agent_response}, status_code=status.HTTP_200_OK)
+        return JSONResponse(content={"message": content_agent_response, "records_ids": records_ids, "records_titles": records_titles}, status_code=status.HTTP_200_OK)
     except Exception as e:
         log.error("Error on chat_route")
         log.error(e)

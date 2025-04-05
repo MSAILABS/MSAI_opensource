@@ -6,3 +6,4 @@ class Chat_Agent_Query(BaseModel):
     query: str
     identifier: Optional[str] = ""
     use_records: bool = True
+    number_of_chunks: Optional[int] = 2

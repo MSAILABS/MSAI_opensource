@@ -1,6 +1,7 @@
 import logging as log
 
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from db.models.records import Records
 
@@ -18,6 +19,15 @@ def get_all_records_from_db(db: Session):
         log.error("Error on getting all records from database")
         log.error(e)
         return []
+    
+def get_records_count_from_db(db: Session):
+    try:
+        records_count = db.query(Records).count()
+        return records_count
+    except Exception as e:
+        log.error("error on getting count of records from db")
+        log.error(e)
+        return 0
     
 def get_record_by_id(record_id: int, db: Session):
     try:

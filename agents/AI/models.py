@@ -4,6 +4,7 @@ from enum import Enum
 from dotenv import load_dotenv
 
 from llama_index.llms.ollama import Ollama
+from llama_index.llms.anthropic import Anthropic
 from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.embeddings.azure_openai import AzureOpenAIEmbedding
 
@@ -21,10 +22,14 @@ ollama_endpoint = os.getenv("OLLAMA_ENDPOINT") # example: "http://localhost:1143
 ollama_llm_name = os.getenv("OLLAMA_LLM") # example: "deepseek-r1:32b"
 ollama_embed_name = os.getenv("OLLAMA_EMBED") # example: "all-minilm"
 
+anthropic_llm_name = os.getenv("CLAUDE_LLM")
+anthropic_api_key = os.getenv("CLAUDE_API_KEY")
+
 
 class Models:
     class AIModels(Enum):
         DeepSeek = "DeepSeek"
+        ANTHROPIC = "Claude"
 
     class EmbeddingModels(Enum):
         ALL_LLM_MINI = "all_lm_mini"
@@ -39,6 +44,11 @@ class Models:
                     base_url=ollama_endpoint,
                     model=ollama_llm_name,
                     request_timeout=1000.0
+                )
+            case Models.AIModels.ANTHROPIC:
+                return Anthropic(
+                    model=anthropic_llm_name,
+                    api_key=anthropic_api_key
                 )
             case _:
                 raise ValueError("Unsupported AI model")
@@ -61,5 +71,5 @@ class Models:
                         api_version=gpt_embed_version,
                     )
         
-llm_model = Models.AIModels.DeepSeek
-embedding_model = Models.EmbeddingModels.ALL_LLM_MINI
+llm_model = Models.AIModels.ANTHROPIC
+embedding_model = Models.EmbeddingModels.OPENAI

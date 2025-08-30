@@ -1,13 +1,22 @@
 import json
+import torch
 import logging as log
 
 from aio_pika import connect_robust, Message, ExchangeType
 from llama_index.core.agent import ReActAgent
 from llama_index.core.base.agent.types import Task
 
+def resolve_device(device_id):
+        if device_id == 'cpu':
+            return torch.device('cpu')
+        elif device_id == 'cuda' or device_id == 'gpu':
+            return torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        else:
+            return torch.device(device_id)
+
 async def send_ai_thoughts(thought, identifier, retry = False):
     try:
-        RABBITMQ_SETTINGS = "amqp://guest:guest@rabbitmq/"
+        RABBITMQ_SETTINGS = "amqp://guest:guest@127.0.0.1/"
         EXCHANGE_NAME = "ai_thoughts"
 
         connection = await connect_robust(RABBITMQ_SETTINGS)

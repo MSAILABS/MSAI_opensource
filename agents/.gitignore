@@ -3,3 +3,4 @@ DB_FILES
 DB_FILES/*
 ./DB_FILES/*
 .env
+model_data

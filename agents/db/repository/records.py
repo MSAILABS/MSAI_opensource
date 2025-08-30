@@ -26,6 +26,8 @@ def add_data_into_vector_store(table_name: str, doc: Document) -> bool:
 
         isSaved = True
     except ValueError as e:
+        log.error("error on saving data into vector db - 1")
+        log.error(e)
         vector_store: None | LanceDBVectorStore = get_vector_store(table_name, "overwrite")
 
         index = VectorStoreIndex.from_vector_store(
@@ -38,7 +40,7 @@ def add_data_into_vector_store(table_name: str, doc: Document) -> bool:
 
         isSaved = True
     except Exception as e:
-        log.error("error on saving data into vector db")
+        log.error("error on saving data into vector db - 2")
         log.error(e)
         isSaved = False
     finally:

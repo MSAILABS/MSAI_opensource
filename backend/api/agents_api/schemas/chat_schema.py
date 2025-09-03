@@ -7,3 +7,4 @@ class Chat_Agent_Query(BaseModel):
     identifier: Optional[str] = ""
     use_records: bool = True
     number_of_chunks: Optional[int] = 2
+    cluster_name: str

@@ -5,8 +5,10 @@ from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import Boolean
+from sqlalchemy import ForeignKey
 
 from db.base_class import Base 
+from db.models.cluster import Cluster
 
 
 class Records(Base):
@@ -16,4 +18,5 @@ class Records(Base):
     upload_date = Column(DateTime,default=datetime.utcnow)
     vector_processed = Column(Boolean, default=False)
     embedding_model = Column(String, nullable=True)
+    cluster_id = Column(Integer, ForeignKey(Cluster.id), nullable=True)
     

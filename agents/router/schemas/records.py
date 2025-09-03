@@ -7,12 +7,20 @@ class RecordData(BaseModel):
     record_title: str
     record_upload_date: str
     identifier: str
+    cluster_name: str
 
 class RecordDataDelete(BaseModel):
     record_id: int
     identifier: str
+    cluster_name: str
 
 
 class RecordDataQuery(BaseModel):
     query: str
     identifer: str
+    cluster_name: str
+
+
+class RecordClusterDeletion(BaseModel):
+    identifier: str
+    cluster_name: str

@@ -35,7 +35,7 @@ async def chat_route(request: Request, data: Chat_Agent_Query):
         records_ids = []
         records_titles = []
         if data.use_records or data.number_of_chunks < 1:
-            table_name = remove_non_alphanumeric(data.identifier)
+            table_name = f"{remove_non_alphanumeric(data.identifier)}{remove_non_alphanumeric(data.cluster_name)}" 
 
             await send_ai_thoughts("Getting Records.", data.identifier)
             if data.number_of_chunks is None:

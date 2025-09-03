@@ -1,3 +1,4 @@
+import os, shutil
 import logging as log
 from typing import List
 
@@ -7,7 +8,7 @@ from llama_index.core.schema import BaseNode, Document
 from llama_index.vector_stores.lancedb import LanceDBVectorStore
 from llama_index.core.base.base_query_engine import BaseQueryEngine
 
-from db.vector_db import get_vector_store
+from db.vector_db import get_db_location, get_vector_store
 from AI.models import Models, llm_model, embedding_model
 
 
@@ -128,4 +129,14 @@ def check_if_record_exist_by_id(table_name: str, record_id: str) -> bool:
     except Exception as e:
         log.error("error on deleting user record from vector db")
         log.error(e)
+        return False
+
+
+def delete_records_group(table_name: str):
+    uri = get_db_location(table_name=table_name)
+
+    if os.path.exists(uri) and os.path.isdir(uri):
+        shutil.rmtree(uri)  # delete folder and all its contents
+        return True
+    else:
         return False

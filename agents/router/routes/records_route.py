@@ -9,9 +9,9 @@ from sqlalchemy import table
 
 from AI.agents.content_generator_agent import ContentGeneratorAgent
 from AI.agents.binary_judge_agent import BinaryJudgeAgent
-from db.repository.records import add_data_into_vector_store, delete_user_record
+from db.repository.records import add_data_into_vector_store, delete_records_group, delete_user_record
 from router.route_utilities import remove_non_alphanumeric
-from router.schemas.records import RecordData, RecordDataDelete, RecordDataQuery
+from router.schemas.records import RecordClusterDeletion, RecordData, RecordDataDelete, RecordDataQuery
 from AI.models import embedding_model
 
 router = APIRouter()
@@ -22,7 +22,7 @@ binary_judge_agent = BinaryJudgeAgent()
 @router.post("/add_record_into_vector_db")
 async def add_record_into_vector_db(request: Request, record_data: RecordData):
     try:
-        table_name = remove_non_alphanumeric(record_data.identifier)
+        table_name = f"{remove_non_alphanumeric(record_data.identifier)}{remove_non_alphanumeric(record_data.cluster_name)}" 
 
         # deleting old record if record is already present
         # reason for this that if user vectorized record previously using different embedding_model and then after change model.
@@ -87,7 +87,7 @@ async def add_record_into_vector_db(request: Request, record_data: RecordData):
 @router.post("/delete_record_data_from_vector_db")
 async def remove_record_from_vector_db(request: Request, data: RecordDataDelete):
     try:
-        table_name: str = remove_non_alphanumeric(data.identifier)
+        table_name = f"{remove_non_alphanumeric(data.identifier)}{remove_non_alphanumeric(data.cluster_name)}" 
 
         is_deleted = delete_user_record(table_name=table_name, record_id=data.record_id)
 
@@ -105,7 +105,7 @@ async def remove_record_from_vector_db(request: Request, data: RecordDataDelete)
 @router.post("/update_record_data_in_vector_db")
 async def update_record_in_vector_db(request: Request, data: RecordData):
     try:
-        delete_record = RecordDataDelete(record_id=data.record_id, identifier=data.identifier)
+        delete_record = RecordDataDelete(record_id=data.record_id, identifier=data.identifier, cluster_name=data.cluster_name)
         res = await remove_record_from_vector_db(request, delete_record)
 
         if res.status_code == 200:
@@ -123,6 +123,24 @@ async def update_record_in_vector_db(request: Request, data: RecordData):
         raise e
     
 
+@router.post("/delete_records_cluster")
+async def delete_records_cluster(request: Request, data: RecordClusterDeletion):
+    try:
+        table_name = f"{remove_non_alphanumeric(data.identifier)}{remove_non_alphanumeric(data.cluster_name)}" 
+        is_group_delete = delete_records_group(table_name = table_name)
+
+        if is_group_delete:
+            return JSONResponse(content="Records Cluster deleted successfully", status_code=status.HTTP_200_OK)
+        else:
+            return JSONResponse(content="Cannot delete records cluster", status_code=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        log.error("error on delete_records_cluster route")
+        log.error(e)
+        raise e
+    
+
+
 @router.post("/record_query_route")
 async def record_query_route(request: Request, data: RecordDataQuery):
     try:
@@ -131,5 +149,6 @@ async def record_query_route(request: Request, data: RecordDataQuery):
         log.error("error on query record data")
         log.error(e)
         raise e
+
 
 

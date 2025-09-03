@@ -26,7 +26,18 @@ export default function records({ showUpBtn, showRecords }: any) {
   const get_records = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${config.api_url}/get_records`);
+      const selectedGroup = JSON.parse(
+        localStorage.getItem("selectedGroup") ?? ""
+      );
+
+      if (!selectedGroup || selectedGroup == null || selectedGroup == "null") {
+        alert("Group is not seleted, please first select a group");
+        return;
+      }
+
+      const res = await axios.get(
+        `${config.api_url}/get_records/${selectedGroup["id"]}`
+      );
 
       if (res) {
         setRecords(res.data?.records);

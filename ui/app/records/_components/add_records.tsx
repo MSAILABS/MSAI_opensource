@@ -38,10 +38,19 @@ export default function add_records({ open, setOpen }: AddRecordsProps) {
     const formData = new FormData();
     formData.append("file", file);
 
+    const selectedGroup = JSON.parse(
+      localStorage.getItem("selectedGroup") ?? ""
+    );
+
+    if (!selectedGroup || selectedGroup == null || selectedGroup == "null") {
+      alert("Group is not seleted, please first select a group");
+      return;
+    }
+
     try {
       setLoading(true);
       const response = await axios.post(
-        `${config.api_url}/add_record`,
+        `${config.api_url}/add_record/${selectedGroup["id"]}`,
         formData,
         {
           headers: {

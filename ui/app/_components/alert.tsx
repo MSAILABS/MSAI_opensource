@@ -5,7 +5,7 @@ import {
   FaCheckCircle,
 } from "react-icons/fa";
 
-interface AlertProps {
+export interface AlertProps {
   type: "warning" | "danger" | "success";
   message: string;
 }

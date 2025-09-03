@@ -2,16 +2,21 @@
 
 import { useState, useRef, useEffect, Fragment } from "react";
 import { FaFolder } from "react-icons/fa";
+import { GoSidebarCollapse } from "react-icons/go";
+import { MdViewSidebar } from "react-icons/md";
 import { IoOptionsOutline } from "react-icons/io5";
 import axios from "axios";
 import config from "@/utilities/config";
 import { Field, Label, Switch } from "@headlessui/react";
 import Records from "../records/records";
-import Link from "next/link";
+import Sidebar from "./sidebar";
 
 let sendActive = true;
 const chatbox = () => {
+  const [enable, setEnable] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState<null | object>(null);
   const [showRecords, setShowRecords] = useState(false);
+  const [showLeftSidebar, setShowLeftSidebar] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
   const inputMessage = useRef<HTMLTextAreaElement>(null);
@@ -19,18 +24,6 @@ const chatbox = () => {
   const [messages, setMessages] = useState<any>([
     // { type: "user", message: "hello" },
     // { type: "bot", message: "hello" },
-    // { type: "user", message: "how are you" },
-    // { type: "bot", message: "fine" },
-    // { type: "bot", message: "fine" },
-    // { type: "bot", message: "fine" },
-    // { type: "bot", message: "fine" },
-    // { type: "bot", message: "fine" },
-    // { type: "user", message: "how are you" },
-    // { type: "user", message: "how are you" },
-    // { type: "user", message: "how are you" },
-    // { type: "user", message: "how are you" },
-    // { type: "bot", message: "fine" },
-    // { type: "bot", message: "not fine" },
   ]);
   const lastItemRef = useRef<HTMLDivElement | null>(null);
   const [showThoughts, setShowThoughts] = useState(false);
@@ -47,7 +40,8 @@ const chatbox = () => {
   const sendMessage = async () => {
     if (
       inputMessage.current?.value.replaceAll(" ", "") == "" ||
-      sendActive == false
+      sendActive == false ||
+      enable == false
     )
       return;
 
@@ -84,11 +78,21 @@ const chatbox = () => {
           ? messages.filter((e: any) => e["type"] != "error").slice(-5)
           : messages.filter((e: any) => e["type"] != "error");
 
+      const selectedGroup = JSON.parse(
+        localStorage.getItem("selectedGroup") ?? ""
+      );
+
+      if (!selectedGroup || selectedGroup == null || selectedGroup == "null") {
+        alert("Group is not seleted, please first select a group");
+        return;
+      }
+
       const response = await axios.post(`${config.api_url}/chat`, {
         query: inputMessage.current?.value,
         context: context,
         use_records: useRecords,
         number_of_chunks: numberOfChunks,
+        cluster_name: selectedGroup["name"],
       });
 
       console.log(response);
@@ -171,6 +175,10 @@ const chatbox = () => {
   }, []);
 
   useEffect(() => {
+    setMessages([]);
+  }, [selectedGroup]);
+
+  useEffect(() => {
     if (lastItemRef.current) {
       lastItemRef.current.scrollIntoView({ behavior: "smooth" });
     }
@@ -189,12 +197,14 @@ const chatbox = () => {
 
   return (
     <>
-      <button
-        className="links_div_btn chatbot_record_btn"
-        onClick={() => setShowRecords(!showRecords)}
-      >
-        <FaFolder /> <span>Records</span>
-      </button>
+      {enable && (
+        <button
+          className="links_div_btn chatbot_record_btn"
+          onClick={() => setShowRecords(!showRecords)}
+        >
+          <FaFolder /> <span>Records</span>
+        </button>
+      )}
       <Field className="flex justify-end fixed p-1 record-toggle">
         <Label className="mr-2">Use Records</Label>
         <Switch
@@ -263,6 +273,12 @@ const chatbox = () => {
                   🚫 Use chatbot without records. <br />
                   It can be useful when asking general question (faster)
                 </p>
+                {!enable && (
+                  <p className="col-span-1 bg-red-500 p-4 md:p-5 text-white rounded-lg">
+                    Chat is disabled. <br />
+                    To use chat add group by clicking button on left
+                  </p>
+                )}
               </div>
             </div>
           )}
@@ -304,6 +320,7 @@ const chatbox = () => {
                   max={10}
                   placeholder="Number of Chunks"
                   defaultValue={2}
+                  disabled={!enable}
                   onChange={(e) => setNumberOfChunks(parseInt(e.target.value))}
                 />
               </div>
@@ -322,6 +339,7 @@ const chatbox = () => {
               id="inputBox"
               className="chat-text-area w-full ml-2"
               placeholder="Type a message"
+              disabled={!enable}
             ></textarea>
             <button
               onClick={sendMessage}
@@ -343,6 +361,28 @@ const chatbox = () => {
         className="records_sidebar"
       >
         <Records showUpBtn={false} showRecords={showRecords} />
+      </div>
+      <div
+        className="overlay_for_records"
+        style={{ display: showLeftSidebar ? "block" : "none" }}
+        onClick={() => setShowLeftSidebar(!showLeftSidebar)}
+      ></div>
+      <div
+        style={{ transform: showLeftSidebar ? "scaleX(1)" : "scaleX(0)" }}
+        className="left_sidebar"
+      >
+        <Sidebar
+          enableChat={enable}
+          setEnableChat={setEnable}
+          selectedGroup={selectedGroup}
+          setSelectedGroup={setSelectedGroup}
+        />
+      </div>
+      <div
+        className="left_sidebar_icon"
+        onClick={() => setShowLeftSidebar(!showLeftSidebar)}
+      >
+        <GoSidebarCollapse color="silver" size={"3em"} />
       </div>
     </>
   );
